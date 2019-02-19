@@ -12,21 +12,25 @@ namespace Minesweeper
 {
     public partial class MainForm : Form
     {
-        static int width = 30;
-        static int height = 16;
+        static int width = 10;
+        static int height = 10;
+        static int MineCount = 10;
+        static int Lives = 3;
+        int MinesLeft = MineCount;
+        int LivesLeft = Lives;
         int FieldSize = 23;
         int FreeSpace = 35;
-        int MineCount = 99;
         int MineCheck = 0;
         int FieldsLeft = width * height;
+
         Random rnd = new Random();
-        public Button[] Fields = new Button[width * height];
+        List<Button> Fields = new List<Button>(height * width);
 
         public MainForm()
         {
             InitializeComponent();
         }
-     
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             CreateFields();
@@ -40,21 +44,24 @@ namespace Minesweeper
                 for (int w = 0; w < width; w++)
                 {
                     int index = h * width + w;
-                    Fields[index] = new Button();
+                    Fields.Add(new Button());
                     Fields[index].Location = new Point(2 + w * FieldSize, FreeSpace + h * FieldSize);
                     Fields[index].Size = new Size(FieldSize, FieldSize);
                     Fields[index].BackColor = Color.Gray;
                     Fields[index].FlatStyle = FlatStyle.Flat;
                     Fields[index].FlatAppearance.BorderSize = 1;
                     Fields[index].FlatAppearance.BorderColor = Color.Black;
-                    this.Controls.Add(Fields[h * width + w]);                  
+                    this.Controls.Add(Fields[h * width + w]);
                     Fields[index].Click += new EventHandler(Field_Click);
                     void Field_Click(object sender, EventArgs e)
                     {
                         Button btn = (Button)sender;
-                        btn.Visible = false;
-                        FieldsLeft--;
-                        CheckForMines(index);
+                        if (btn.BackColor == Color.Gray)
+                        {
+                            btn.Visible = false;
+                            FieldsLeft--;
+                            CheckForMines(index);
+                        }
                     }
                     Fields[index].MouseDown += new MouseEventHandler(Field_RightClick);
                     void Field_RightClick(object sender, MouseEventArgs e)
@@ -66,12 +73,10 @@ namespace Minesweeper
                             if (btn.BackColor != Color.Red)
                             {
                                 btn.BackColor = Color.Red;
-                                btn.Enabled = false;
                             }
                             else
                             {
-                                btn.BackColor = SystemColors.Control;
-                                btn.Enabled = true;
+                                btn.BackColor = Color.Gray;
                             }
                         }
                     }
@@ -96,8 +101,32 @@ namespace Minesweeper
                     Fields[a].Click += new EventHandler(Mine_Click);
                     void Mine_Click(object sender, EventArgs e)
                     {
-                        MessageBox.Show("Kaboom!");
+                        Button btn = (Button)sender;
+                        if (btn.BackColor == Color.Gray)
+                        {
+                            MessageBox.Show("You don't want to do that...(Lives: "+ (LivesLeft-1) + ")");
+                            LivesLeft--;
+                            MinesLeft--;
+                            btn.Visible = true;
+                            btn.BackColor = Color.Red;
+                        }
+                        if (LivesLeft == 0)
+                        {
+                            MessageBox.Show("You lose!");
+                            foreach (Button Field in Fields)
+                            {
+                                Field.Enabled = false;
+                                if ((string)Field.Tag == "Mine")
+                                {
+                                    Field.Visible = false;
+                                }
+                            }
+                        }
                     }
+                }
+                else
+                {
+                    i--;
                 }
             }
         }
@@ -154,10 +183,10 @@ namespace Minesweeper
                     CheckUp(index);
                     CheckUperRight(index);
                     CheckRight(index);
-                    if (MineCheck==0)
+                    if (MineCheck == 0)
                     {
                         Fields[index - width].PerformClick();
-                        Fields[index - (width-1)].PerformClick();
+                        Fields[index - (width - 1)].PerformClick();
                         Fields[index + 1].PerformClick();
                     }
                 }
@@ -166,9 +195,9 @@ namespace Minesweeper
                     CheckUperLeft(index);
                     CheckUp(index);
                     CheckLeft(index);
-                    if (MineCheck==0)
+                    if (MineCheck == 0)
                     {
-                        Fields[index - (width+1)].PerformClick();
+                        Fields[index - (width + 1)].PerformClick();
                         Fields[index - width].PerformClick();
                         Fields[index - 1].PerformClick();
                     }
@@ -180,11 +209,11 @@ namespace Minesweeper
                     CheckUperRight(index);
                     CheckLeft(index);
                     CheckRight(index);
-                    if (MineCheck==0)
+                    if (MineCheck == 0)
                     {
                         Fields[index - width].PerformClick();
-                        Fields[index - (width+1)].PerformClick();
-                        Fields[index - (width-1)].PerformClick();
+                        Fields[index - (width + 1)].PerformClick();
+                        Fields[index - (width - 1)].PerformClick();
                         Fields[index - 1].PerformClick();
                         Fields[index + 1].PerformClick();
                     }
@@ -197,12 +226,12 @@ namespace Minesweeper
                 CheckLeft(index);
                 CheckLowerLeft(index);
                 CheckLower(index);
-                if (MineCheck==0)
+                if (MineCheck == 0)
                 {
                     Fields[index - width].PerformClick();
-                    Fields[index - (width+1)].PerformClick();
+                    Fields[index - (width + 1)].PerformClick();
                     Fields[index - 1].PerformClick();
-                    Fields[index + (width-1)].PerformClick();
+                    Fields[index + (width - 1)].PerformClick();
                     Fields[index + width].PerformClick();
                 }
             }
@@ -213,12 +242,12 @@ namespace Minesweeper
                 CheckRight(index);
                 CheckLowerRight(index);
                 CheckLower(index);
-                if (MineCheck==0)
+                if (MineCheck == 0)
                 {
                     Fields[index - width].PerformClick();
-                    Fields[index - (width-1)].PerformClick();
+                    Fields[index - (width - 1)].PerformClick();
                     Fields[index + 1].PerformClick();
-                    Fields[index + (width+1)].PerformClick();
+                    Fields[index + (width + 1)].PerformClick();
                     Fields[index + width].PerformClick();
                 }
             }
@@ -232,16 +261,16 @@ namespace Minesweeper
                 CheckLowerLeft(index);
                 CheckLeft(index);
                 CheckUperLeft(index);
-                if (MineCheck==0)
+                if (MineCheck == 0)
                 {
                     Fields[index - width].PerformClick();
-                    Fields[index - (width-1)].PerformClick();
+                    Fields[index - (width - 1)].PerformClick();
                     Fields[index + 1].PerformClick();
-                    Fields[index + (width+1)].PerformClick();
+                    Fields[index + (width + 1)].PerformClick();
                     Fields[index + width].PerformClick();
-                    Fields[index + (width-1)].PerformClick();
+                    Fields[index + (width - 1)].PerformClick();
                     Fields[index - 1].PerformClick();
-                    Fields[index - (width+1)].PerformClick();
+                    Fields[index - (width + 1)].PerformClick();
                 }
             }
             Label MinesAround = new Label();
@@ -250,14 +279,19 @@ namespace Minesweeper
             if (MineCheck != 0)
             {
                 MinesAround.Text = MineCheck.ToString();
-            }    
-            MinesAround.Font = new Font("Microsoft Sans Serif",10);
-            MinesAround.TextAlign= ContentAlignment.MiddleCenter;
+            }
+            MinesAround.Font = new Font("Microsoft Sans Serif", 10);
+            MinesAround.TextAlign = ContentAlignment.MiddleCenter;
             MinesAround.BorderStyle = BorderStyle.FixedSingle;
             this.Controls.Add(MinesAround);
             MineCheck = 0;
-            if (FieldsLeft == MineCount)
-            {
+            if (FieldsLeft == MinesLeft)
+            {            
+                foreach (Button Field in Fields)
+                {
+                    Field.BackColor = Color.Red;
+                    Field.Enabled = false;
+                }
                 MessageBox.Show("You win!");
             }
         }
@@ -328,7 +362,13 @@ namespace Minesweeper
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Fields.
+            FieldsLeft = height * width;
+            this.Controls.Clear();
+            this.InitializeComponent();
+            CreateFields();
+            SetMines();
+            LivesLeft = Lives;
+            MinesLeft = MineCount;
         }
     }
 }
