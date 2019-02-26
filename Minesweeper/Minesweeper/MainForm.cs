@@ -34,6 +34,7 @@ namespace Minesweeper
         {
             CreateFields();
             SetMines();
+            LBLLives.Text = LivesLeft.ToString();
         }
 
         private void CreateFields()
@@ -58,6 +59,30 @@ namespace Minesweeper
                         if (btn.BackColor == Color.Gray)
                         {
                             btn.Visible = false;
+                            if ((string)btn.Tag == "Mine")
+                            {
+                                if (btn.BackColor == Color.Gray)
+                                {
+                                    MessageBox.Show("You don't want to do that...(Lives: " + (LivesLeft - 1) + ")");
+                                    LivesLeft--;
+                                    MinesLeft--;
+                                    btn.Visible = true;
+                                    btn.BackColor = Color.Red;
+                                }
+                                if (LivesLeft == 0)
+                                {
+                                    MessageBox.Show("You lose!");
+                                    foreach (Button Field in Fields)
+                                    {
+                                        Field.Enabled = false;
+                                        if ((string)Field.Tag == "Mine")
+                                        {
+                                            Field.Visible = false;
+                                        }
+                                    }
+                                }
+                            }
+                            
                             FieldsLeft--;
                             CheckForMines(index);
                         }
@@ -97,31 +122,6 @@ namespace Minesweeper
                     Mine.SizeMode = PictureBoxSizeMode.StretchImage;
                     this.Controls.Add(Mine);
                     Fields[a].Tag = "Mine";
-                    Fields[a].Click += new EventHandler(Mine_Click);
-                    void Mine_Click(object sender, EventArgs e)
-                    {
-                        Button btn = (Button)sender;
-                        if (btn.BackColor == Color.Gray)
-                        {
-                            MessageBox.Show("You don't want to do that...(Lives: "+ (LivesLeft-1) + ")");
-                            LivesLeft--;
-                            MinesLeft--;
-                            btn.Visible = true;
-                            btn.BackColor = Color.Red;
-                        }
-                        if (LivesLeft == 0)
-                        {
-                            MessageBox.Show("You lose!");
-                            foreach (Button Field in Fields)
-                            {
-                                Field.Enabled = false;
-                                if ((string)Field.Tag == "Mine")
-                                {
-                                    Field.Visible = false;
-                                }
-                            }
-                        }
-                    }
                 }
                 else
                 {
@@ -133,145 +133,10 @@ namespace Minesweeper
         private void CheckForMines(int index)
         {
             #region Checks
-            if (index < width)
+            WhereTocheck(index);
+            if (MineCheck == 0)
             {
-                if (index == 0)
-                {
-                    CheckRight(index);
-                    CheckLower(index);
-                    CheckLowerRight(index);
-                    if (MineCheck == 0)
-                    {
-                        Fields[index + 1].PerformClick();
-                        Fields[index + width].PerformClick();
-                        Fields[index + (width + 1)].PerformClick();
-                    }
-                }
-                else if (index == width - 1)
-                {
-                    CheckLeft(index);
-                    CheckLowerLeft(index);
-                    CheckLower(index);
-                    if (MineCheck == 0)
-                    {
-                        Fields[index - 1].PerformClick();
-                        Fields[index + (width - 1)].PerformClick();
-                        Fields[index + width].PerformClick();
-                    }
-                }
-                else
-                {
-                    CheckLeft(index);
-                    CheckRight(index);
-                    CheckLowerLeft(index);
-                    CheckLower(index);
-                    CheckLowerRight(index);
-                    if (MineCheck == 0)
-                    {
-                        Fields[index + width].PerformClick();
-                        Fields[index + (width + 1)].PerformClick();
-                        Fields[index + (width - 1)].PerformClick();
-                        Fields[index + 1].PerformClick();
-                        Fields[index - 1].PerformClick();
-                    }
-                }
-            }
-            else if (index >= width * (height - 1) && index < width * height)
-            {
-                if (index == width * (height - 1))
-                {
-                    CheckUp(index);
-                    CheckUperRight(index);
-                    CheckRight(index);
-                    if (MineCheck == 0)
-                    {
-                        Fields[index - width].PerformClick();
-                        Fields[index - (width - 1)].PerformClick();
-                        Fields[index + 1].PerformClick();
-                    }
-                }
-                else if (index == (width * height) - 1)
-                {
-                    CheckUperLeft(index);
-                    CheckUp(index);
-                    CheckLeft(index);
-                    if (MineCheck == 0)
-                    {
-                        Fields[index - (width + 1)].PerformClick();
-                        Fields[index - width].PerformClick();
-                        Fields[index - 1].PerformClick();
-                    }
-                }
-                else
-                {
-                    CheckUperLeft(index);
-                    CheckUp(index);
-                    CheckUperRight(index);
-                    CheckLeft(index);
-                    CheckRight(index);
-                    if (MineCheck == 0)
-                    {
-                        Fields[index - width].PerformClick();
-                        Fields[index - (width + 1)].PerformClick();
-                        Fields[index - (width - 1)].PerformClick();
-                        Fields[index - 1].PerformClick();
-                        Fields[index + 1].PerformClick();
-                    }
-                }
-            }
-            else if ((index - (width - 1)) % width == 0)
-            {
-                CheckUp(index);
-                CheckUperLeft(index);
-                CheckLeft(index);
-                CheckLowerLeft(index);
-                CheckLower(index);
-                if (MineCheck == 0)
-                {
-                    Fields[index - width].PerformClick();
-                    Fields[index - (width + 1)].PerformClick();
-                    Fields[index - 1].PerformClick();
-                    Fields[index + (width - 1)].PerformClick();
-                    Fields[index + width].PerformClick();
-                }
-            }
-            else if (index % width == 0)
-            {
-                CheckUp(index);
-                CheckUperRight(index);
-                CheckRight(index);
-                CheckLowerRight(index);
-                CheckLower(index);
-                if (MineCheck == 0)
-                {
-                    Fields[index - width].PerformClick();
-                    Fields[index - (width - 1)].PerformClick();
-                    Fields[index + 1].PerformClick();
-                    Fields[index + (width + 1)].PerformClick();
-                    Fields[index + width].PerformClick();
-                }
-            }
-            else
-            {
-                CheckUp(index);
-                CheckUperRight(index);
-                CheckRight(index);
-                CheckLowerRight(index);
-                CheckLower(index);
-                CheckLowerLeft(index);
-                CheckLeft(index);
-                CheckUperLeft(index);
-                if (MineCheck == 0 && (string)Fields[index].Tag!="Mine")
-                {
-                    Fields[index - width].PerformClick();
-                    Fields[index - (width - 1)].PerformClick();
-                    Fields[index + 1].PerformClick();
-                    Fields[index + (width + 1)].PerformClick();
-                    Fields[index + width].PerformClick();
-                    Fields[index + (width - 1)].PerformClick();
-                    Fields[index - 1].PerformClick();
-                    Fields[index - (width + 1)].PerformClick();
-                }
+                ClickIfEmpty(index);
             }
             #endregion
             Label MinesAround = new Label();
@@ -291,94 +156,7 @@ namespace Minesweeper
             {
                 if (e.Button == MouseButtons.Middle)
                 {
-                    if (index < width)
-                    {
-                        if (index == 0)
-                        {
-                                Fields[index + 1].PerformClick();
-                                Fields[index + width].PerformClick();
-                                Fields[index + (width + 1)].PerformClick(); 
-                        }
-                        else if (index == width - 1)
-                        {
-                                Fields[index - 1].PerformClick();
-                                Fields[index + (width - 1)].PerformClick();
-                                Fields[index + width].PerformClick();
-                            
-                        }
-                        else
-                        {
-
-                                Fields[index + width].PerformClick();
-                                Fields[index + (width + 1)].PerformClick();
-                                Fields[index + (width - 1)].PerformClick();
-                                Fields[index + 1].PerformClick();
-                                Fields[index - 1].PerformClick();
-                            
-                        }
-                    }
-                    else if (index >= width * (height - 1) && index < width * height)
-                    {
-                        if (index == width * (height - 1))
-                        {
-
-                                Fields[index - width].PerformClick();
-                                Fields[index - (width - 1)].PerformClick();
-                                Fields[index + 1].PerformClick();
-                            
-                        }
-                        else if (index == (width * height) - 1)
-                        {
-
-                                Fields[index - (width + 1)].PerformClick();
-                                Fields[index - width].PerformClick();
-                                Fields[index - 1].PerformClick();
-                            
-                        }
-                        else
-                        {
-
-                                Fields[index - width].PerformClick();
-                                Fields[index - (width + 1)].PerformClick();
-                                Fields[index - (width - 1)].PerformClick();
-                                Fields[index - 1].PerformClick();
-                                Fields[index + 1].PerformClick();
-                            
-                        }
-                    }
-                    else if ((index - (width - 1)) % width == 0)
-                    {
-
-                            Fields[index - width].PerformClick();
-                            Fields[index - (width + 1)].PerformClick();
-                            Fields[index - 1].PerformClick();
-                            Fields[index + (width - 1)].PerformClick();
-                            Fields[index + width].PerformClick();
-                        
-                    }
-                    else if (index % width == 0)
-                    {
-
-                            Fields[index - width].PerformClick();
-                            Fields[index - (width - 1)].PerformClick();
-                            Fields[index + 1].PerformClick();
-                            Fields[index + (width + 1)].PerformClick();
-                            Fields[index + width].PerformClick();
-                        
-                    }
-                    else
-                    {
-
-                            Fields[index - width].PerformClick();
-                            Fields[index - (width - 1)].PerformClick();
-                            Fields[index + 1].PerformClick();
-                            Fields[index + (width + 1)].PerformClick();
-                            Fields[index + width].PerformClick();
-                            Fields[index + (width - 1)].PerformClick();
-                            Fields[index - 1].PerformClick();
-                            Fields[index - (width + 1)].PerformClick();
-                        
-                    }
+                    ClickIfEmpty(index);
                 }
             }
             if (FieldsLeft == MinesLeft)
@@ -456,17 +234,6 @@ namespace Minesweeper
             }
         }
         #endregion
-        private void button1_Click(object sender, EventArgs e)
-        {
-            FieldsLeft = height * width;
-            Fields.Clear();
-            this.Controls.Clear();
-            this.InitializeComponent();
-            CreateFields();
-            SetMines();
-            LivesLeft = Lives;
-            MinesLeft = MineCount;
-        }
 
         private void easyToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -487,6 +254,172 @@ namespace Minesweeper
             width = 30;
             height = 16;
             MineCount = 99;
+        }
+
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FieldsLeft = height * width;
+            Fields.Clear();
+            this.Controls.Clear();
+            this.InitializeComponent();
+            CreateFields();
+            SetMines();
+            LivesLeft = Lives;
+            MinesLeft = MineCount;
+            LBLLives.Text = LivesLeft.ToString();
+        }
+
+        private void ClickIfEmpty(int index)
+        {
+            if (index < width)
+            {
+                if (index == 0)
+                {
+                    Fields[index + 1].PerformClick();
+                    Fields[index + width].PerformClick();
+                    Fields[index + (width + 1)].PerformClick();
+                }
+                else if (index == width - 1)
+                {
+                    Fields[index - 1].PerformClick();
+                    Fields[index + (width - 1)].PerformClick();
+                    Fields[index + width].PerformClick();
+                }
+                else
+                {
+                    Fields[index + width].PerformClick();
+                    Fields[index + (width + 1)].PerformClick();
+                    Fields[index + (width - 1)].PerformClick();
+                    Fields[index + 1].PerformClick();
+                    Fields[index - 1].PerformClick();
+                }
+            }
+            else if (index >= width * (height - 1) && index < width * height)
+            {
+                if (index == width * (height - 1))
+                {
+                    Fields[index - width].PerformClick();
+                    Fields[index - (width - 1)].PerformClick();
+                    Fields[index + 1].PerformClick();
+                }
+                else if (index == (width * height) - 1)
+                {
+                    Fields[index - (width + 1)].PerformClick();
+                    Fields[index - width].PerformClick();
+                    Fields[index - 1].PerformClick();
+                }
+                else
+                {
+                    Fields[index - width].PerformClick();
+                    Fields[index - (width + 1)].PerformClick();
+                    Fields[index - (width - 1)].PerformClick();
+                    Fields[index - 1].PerformClick();
+                    Fields[index + 1].PerformClick();
+                }
+            }
+            else if ((index - (width - 1)) % width == 0)
+            {
+                Fields[index - width].PerformClick();
+                Fields[index - (width + 1)].PerformClick();
+                Fields[index - 1].PerformClick();
+                Fields[index + (width - 1)].PerformClick();
+                Fields[index + width].PerformClick();
+            }
+            else if (index % width == 0)
+            {
+                Fields[index - width].PerformClick();
+                Fields[index - (width - 1)].PerformClick();
+                Fields[index + 1].PerformClick();
+                Fields[index + (width + 1)].PerformClick();
+                Fields[index + width].PerformClick();
+            }
+            else
+            {
+                Fields[index - width].PerformClick();
+                Fields[index - (width - 1)].PerformClick();
+                Fields[index + 1].PerformClick();
+                Fields[index + (width + 1)].PerformClick();
+                Fields[index + width].PerformClick();
+                Fields[index + (width - 1)].PerformClick();
+                Fields[index - 1].PerformClick();
+                Fields[index - (width + 1)].PerformClick();
+            }
+        }
+        private void WhereTocheck(int index)
+        {
+            if (index < width)
+            {
+                if (index == 0)
+                {
+                    CheckRight(index);
+                    CheckLower(index);
+                    CheckLowerRight(index);
+                }
+                else if (index == width - 1)
+                {
+                    CheckLeft(index);
+                    CheckLowerLeft(index);
+                    CheckLower(index);
+                }
+                else
+                {
+                    CheckLeft(index);
+                    CheckRight(index);
+                    CheckLowerLeft(index);
+                    CheckLower(index);
+                    CheckLowerRight(index);
+                }
+            }
+            else if (index >= width * (height - 1) && index < width * height)
+            {
+                if (index == width * (height - 1))
+                {
+                    CheckUp(index);
+                    CheckUperRight(index);
+                    CheckRight(index);
+                }
+                else if (index == (width * height) - 1)
+                {
+                    CheckUperLeft(index);
+                    CheckUp(index);
+                    CheckLeft(index);
+                }
+                else
+                {
+                    CheckUperLeft(index);
+                    CheckUp(index);
+                    CheckUperRight(index);
+                    CheckLeft(index);
+                    CheckRight(index);
+                }
+            }
+            else if ((index - (width - 1)) % width == 0)
+            {
+                CheckUp(index);
+                CheckUperLeft(index);
+                CheckLeft(index);
+                CheckLowerLeft(index);
+                CheckLower(index);
+            }
+            else if (index % width == 0)
+            {
+                CheckUp(index);
+                CheckUperRight(index);
+                CheckRight(index);
+                CheckLowerRight(index);
+                CheckLower(index);
+            }
+            else
+            {
+                CheckUp(index);
+                CheckUperRight(index);
+                CheckRight(index);
+                CheckLowerRight(index);
+                CheckLower(index);
+                CheckLowerLeft(index);
+                CheckLeft(index);
+                CheckUperLeft(index);
+            }
         }
     }
 }
