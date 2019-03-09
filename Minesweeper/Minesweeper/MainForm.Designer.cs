@@ -28,73 +28,118 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.gmaeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.easyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mediumToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.hardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.components = new System.ComponentModel.Container();
             this.LBLLives = new System.Windows.Forms.Label();
-            this.menuStrip1.SuspendLayout();
+            this.LBLFlags = new System.Windows.Forms.Label();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.LBLTime = new System.Windows.Forms.Label();
+            this.BTNReset = new System.Windows.Forms.Button();
+            this.BTNGame = new System.Windows.Forms.Button();
+            this.BTNMinesweeper = new System.Windows.Forms.Button();
+            this.BTNClose = new System.Windows.Forms.Button();
+            this.BTNMinimize = new System.Windows.Forms.Button();
             this.SuspendLayout();
-            // 
-            // menuStrip1
-            // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.gmaeToolStripMenuItem,
-            this.resetToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(198, 24);
-            this.menuStrip1.TabIndex = 1;
-            this.menuStrip1.Text = "menuStrip1";
-            // 
-            // gmaeToolStripMenuItem
-            // 
-            this.gmaeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.easyToolStripMenuItem,
-            this.mediumToolStripMenuItem,
-            this.hardToolStripMenuItem});
-            this.gmaeToolStripMenuItem.Name = "gmaeToolStripMenuItem";
-            this.gmaeToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
-            this.gmaeToolStripMenuItem.Text = "Game";
-            // 
-            // easyToolStripMenuItem
-            // 
-            this.easyToolStripMenuItem.Name = "easyToolStripMenuItem";
-            this.easyToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
-            this.easyToolStripMenuItem.Text = "Easy";
-            this.easyToolStripMenuItem.Click += new System.EventHandler(this.easyToolStripMenuItem_Click);
-            // 
-            // mediumToolStripMenuItem
-            // 
-            this.mediumToolStripMenuItem.Name = "mediumToolStripMenuItem";
-            this.mediumToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
-            this.mediumToolStripMenuItem.Text = "Medium";
-            this.mediumToolStripMenuItem.Click += new System.EventHandler(this.mediumToolStripMenuItem_Click);
-            // 
-            // hardToolStripMenuItem
-            // 
-            this.hardToolStripMenuItem.Name = "hardToolStripMenuItem";
-            this.hardToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
-            this.hardToolStripMenuItem.Text = "Hard";
-            this.hardToolStripMenuItem.Click += new System.EventHandler(this.hardToolStripMenuItem_Click);
-            // 
-            // resetToolStripMenuItem
-            // 
-            this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
-            this.resetToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
-            this.resetToolStripMenuItem.Text = "Reset";
-            this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
             // 
             // LBLLives
             // 
             this.LBLLives.AutoSize = true;
-            this.LBLLives.Location = new System.Drawing.Point(159, 7);
+            this.LBLLives.Location = new System.Drawing.Point(47, 49);
             this.LBLLives.Name = "LBLLives";
-            this.LBLLives.Size = new System.Drawing.Size(35, 13);
+            this.LBLLives.Size = new System.Drawing.Size(44, 13);
             this.LBLLives.TabIndex = 2;
-            this.LBLLives.Text = "label1";
+            this.LBLLives.Text = "Lives: 0";
+            // 
+            // LBLFlags
+            // 
+            this.LBLFlags.AutoSize = true;
+            this.LBLFlags.Location = new System.Drawing.Point(1, 50);
+            this.LBLFlags.Name = "LBLFlags";
+            this.LBLFlags.Size = new System.Drawing.Size(44, 13);
+            this.LBLFlags.TabIndex = 3;
+            this.LBLFlags.Text = "Flags: 0";
+            // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // LBLTime
+            // 
+            this.LBLTime.AutoSize = true;
+            this.LBLTime.Location = new System.Drawing.Point(97, 49);
+            this.LBLTime.Name = "LBLTime";
+            this.LBLTime.Size = new System.Drawing.Size(42, 13);
+            this.LBLTime.TabIndex = 4;
+            this.LBLTime.Text = "Time: 0";
+            // 
+            // BTNReset
+            // 
+            this.BTNReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BTNReset.Location = new System.Drawing.Point(75, 23);
+            this.BTNReset.Name = "BTNReset";
+            this.BTNReset.Size = new System.Drawing.Size(75, 23);
+            this.BTNReset.TabIndex = 5;
+            this.BTNReset.Text = "Reset";
+            this.BTNReset.UseVisualStyleBackColor = true;
+            this.BTNReset.Click += new System.EventHandler(this.BTNReset_Click);
+            // 
+            // BTNGame
+            // 
+            this.BTNGame.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BTNGame.Location = new System.Drawing.Point(0, 23);
+            this.BTNGame.Name = "BTNGame";
+            this.BTNGame.Size = new System.Drawing.Size(75, 23);
+            this.BTNGame.TabIndex = 6;
+            this.BTNGame.Text = "Game";
+            this.BTNGame.UseVisualStyleBackColor = true;
+            this.BTNGame.Click += new System.EventHandler(this.BTNGame_Click);
+            // 
+            // BTNMinesweeper
+            // 
+            this.BTNMinesweeper.BackColor = System.Drawing.Color.DimGray;
+            this.BTNMinesweeper.Dock = System.Windows.Forms.DockStyle.Top;
+            this.BTNMinesweeper.FlatAppearance.BorderSize = 0;
+            this.BTNMinesweeper.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DimGray;
+            this.BTNMinesweeper.FlatAppearance.MouseOverBackColor = System.Drawing.Color.DimGray;
+            this.BTNMinesweeper.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BTNMinesweeper.Location = new System.Drawing.Point(0, 0);
+            this.BTNMinesweeper.Name = "BTNMinesweeper";
+            this.BTNMinesweeper.Size = new System.Drawing.Size(198, 23);
+            this.BTNMinesweeper.TabIndex = 7;
+            this.BTNMinesweeper.Text = "Minesweeper";
+            this.BTNMinesweeper.UseVisualStyleBackColor = false;
+            this.BTNMinesweeper.MouseDown += new System.Windows.Forms.MouseEventHandler(this.BTNMinesweeper_MouseDown);
+            this.BTNMinesweeper.MouseMove += new System.Windows.Forms.MouseEventHandler(this.BTNMinesweeper_MouseMove);
+            this.BTNMinesweeper.MouseUp += new System.Windows.Forms.MouseEventHandler(this.BTNMinesweeper_MouseUp);
+            // 
+            // BTNClose
+            // 
+            this.BTNClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BTNClose.BackColor = System.Drawing.Color.Red;
+            this.BTNClose.FlatAppearance.BorderSize = 0;
+            this.BTNClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BTNClose.ForeColor = System.Drawing.Color.White;
+            this.BTNClose.Location = new System.Drawing.Point(172, 0);
+            this.BTNClose.Name = "BTNClose";
+            this.BTNClose.Size = new System.Drawing.Size(26, 23);
+            this.BTNClose.TabIndex = 8;
+            this.BTNClose.Text = "X";
+            this.BTNClose.UseVisualStyleBackColor = false;
+            this.BTNClose.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // BTNMinimize
+            // 
+            this.BTNMinimize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BTNMinimize.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BTNMinimize.BackColor = System.Drawing.Color.DimGray;
+            this.BTNMinimize.FlatAppearance.BorderSize = 0;
+            this.BTNMinimize.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BTNMinimize.Location = new System.Drawing.Point(140, 0);
+            this.BTNMinimize.Name = "BTNMinimize";
+            this.BTNMinimize.Size = new System.Drawing.Size(26, 23);
+            this.BTNMinimize.TabIndex = 9;
+            this.BTNMinimize.Text = "__";
+            this.BTNMinimize.UseVisualStyleBackColor = false;
+            this.BTNMinimize.Click += new System.EventHandler(this.BTNMinimize_Click);
             // 
             // MainForm
             // 
@@ -103,28 +148,33 @@
             this.AutoSize = true;
             this.BackColor = System.Drawing.Color.LightGray;
             this.ClientSize = new System.Drawing.Size(198, 138);
+            this.Controls.Add(this.BTNMinimize);
+            this.Controls.Add(this.BTNClose);
+            this.Controls.Add(this.BTNMinesweeper);
+            this.Controls.Add(this.BTNGame);
+            this.Controls.Add(this.BTNReset);
+            this.Controls.Add(this.LBLTime);
+            this.Controls.Add(this.LBLFlags);
             this.Controls.Add(this.LBLLives);
-            this.Controls.Add(this.menuStrip1);
             this.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.MainMenuStrip = this.menuStrip1;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "MainForm";
             this.Text = "Form1";
-            this.Load += new System.EventHandler(this.MainForm_Load);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem gmaeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem easyToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem mediumToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem hardToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem resetToolStripMenuItem;
         private System.Windows.Forms.Label LBLLives;
+        private System.Windows.Forms.Label LBLFlags;
+        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Label LBLTime;
+        private System.Windows.Forms.Button BTNReset;
+        private System.Windows.Forms.Button BTNGame;
+        private System.Windows.Forms.Button BTNMinesweeper;
+        private System.Windows.Forms.Button BTNClose;
+        private System.Windows.Forms.Button BTNMinimize;
     }
 }
 

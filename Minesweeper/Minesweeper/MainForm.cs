@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,95 +13,138 @@ namespace Minesweeper
 {
     public partial class MainForm : Form
     {
-        static int width = 10;
-        static int height = 10;
-        static int MineCount = 10;
-        static int Lives = 3;
-        int MinesLeft = MineCount;
-        int LivesLeft = Lives;
-        int FieldSize = 23;
-        int FreeSpace = 35;
+        //Main things needed for game
+        public static int GridWidth = 10;
+        public static int GridHeight = 10;
+        public static int MineCount =10;
+        public static int Lives = 3;
+        //For timer
+        bool EndGame = false;
+        //Form visibility
+        public static int FieldSize = 23;
+        int FreeSpace = 65;    
+        //Displaying number of mines around        
         int MineCheck = 0;
-        int FieldsLeft = width * height;
+        //Curent game session items
+        int FieldsLeft = GridWidth * GridHeight;
+        int FlagsCount = MineCount;
+        int LivesLeft = Lives;
+        int Time = 0;        
+        int Score = 0;
+        //Mines
         Random rnd = new Random();
-        List<Button> Fields = new List<Button>(height * width);
+        //Fields
+        CustomButton[][] Fields = new CustomButton[1][];
 
         public MainForm()
         {
             InitializeComponent();
-        }
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
+            BTNMinimize.Location = new Point(BTNClose.Location.X - 26, BTNClose.Location.Y);
+            timer1.Interval = 1000; // 1 second
+            timer1.Start();
             CreateFields();
             SetMines();
             LBLLives.Text = LivesLeft.ToString();
+            LBLFlags.Text = FlagsCount.ToString();
         }
 
         private void CreateFields()
         {
-            for (int h = 0; h < height; h++)
+            Array.Resize<CustomButton[]>(ref Fields, GridHeight);
+            for (int i = 0; i < GridHeight; i++)
             {
-                for (int w = 0; w < width; w++)
+                Fields[i] = new CustomButton[GridWidth];
+            }          
+            for (int h = 0; h < GridHeight; h++)
+            {
+                for (int w = 0; w < GridWidth; w++)
                 {
-                    int index = h * width + w;
-                    Fields.Add(new Button());
-                    Fields[index].Location = new Point(2 + w * FieldSize, FreeSpace + h * FieldSize);
-                    Fields[index].Size = new Size(FieldSize, FieldSize);
-                    Fields[index].BackColor = Color.Gray;
-                    Fields[index].FlatStyle = FlatStyle.Flat;
-                    Fields[index].FlatAppearance.BorderSize = 1;
-                    Fields[index].FlatAppearance.BorderColor = Color.Black;
-                    this.Controls.Add(Fields[h * width + w]);
-                    Fields[index].Click += new EventHandler(Field_Click);
+                    Fields[h][w] = new CustomButton();
+                    Fields[h][w].Location = new Point(2/*Two pixels from the left*/ + w * FieldSize, FreeSpace/*Space at the top*/ + h * FieldSize);
+                    Fields[h][w].Size = new Size(FieldSize, FieldSize);
+                    Fields[h][w].BackColor = Color.Gray;
+                    Fields[h][w].FlatStyle = FlatStyle.Flat;
+                    Fields[h][w].FlatAppearance.BorderSize = 1;
+                    Fields[h][w].FlatAppearance.BorderColor = Color.Black;
+                    Fields[h][w].H = h;
+                    Fields[h][w].W = w;
+                    this.Controls.Add(Fields[h][w]);
+                    Fields[h][w].Click += new EventHandler(Field_Click);
                     void Field_Click(object sender, EventArgs e)
                     {
-                        Button btn = (Button)sender;
-                        if (btn.BackColor == Color.Gray)
+                        CustomButton btn = (CustomButton)sender;                        
+                        //Can't click flagged fields
+                        if (btn.Flag == false)
                         {
                             btn.Visible = false;
-                            if ((string)btn.Tag == "Mine")
+                            if (btn.Mine == true)
                             {
-                                if (btn.BackColor == Color.Gray)
-                                {
-                                    MessageBox.Show("You don't want to do that...(Lives: " + (LivesLeft - 1) + ")");
-                                    LivesLeft--;
-                                    MinesLeft--;
-                                    btn.Visible = true;
-                                    btn.BackColor = Color.Red;
-                                }
+                                MessageBox.Show("You don't want to do that...(Lives: " + (LivesLeft - 1) + ")");
+                                LivesLeft--;
+                                FieldsLeft++;
+                                LBLLives.Text = LivesLeft.ToString();
+                                btn.Visible = true;
+                                btn.Flag = true;
+                                btn.BackColor = Color.Red;
+                                FlagsCount--;
+                                LBLFlags.Text = FlagsCount.ToString();                               
                                 if (LivesLeft == 0)
                                 {
+                                    EndGame = true;
                                     MessageBox.Show("You lose!");
-                                    foreach (Button Field in Fields)
+                                    foreach (CustomButton[] Row in Fields)
                                     {
-                                        Field.Enabled = false;
-                                        if ((string)Field.Tag == "Mine")
+                                        foreach (CustomButton Field in Row)
                                         {
-                                            Field.Visible = false;
+                                            if (Field != null)
+                                            {
+                                                Field.Enabled = false;
+                                                if (Field.Mine == true && Field.Flag == false)
+                                                {
+                                                    Field.Visible = false;
+                                                }
+                                                if (Field.Mine == false && Field.Flag == true)
+                                                {
+                                                    Field.Visible = false;
+                                                    PictureBox NotMine = new PictureBox();
+                                                    NotMine.Location = Field.Location;
+                                                    NotMine.Size = new Size(FieldSize, FieldSize);
+                                                    NotMine.Image = Minesweeper.Properties.Resources.MineCrossed;
+                                                    NotMine.SizeMode = PictureBoxSizeMode.StretchImage;
+                                                    this.Controls.Add(NotMine);
+                                                }                                              
+                                            }                                        
                                         }
                                     }
                                 }
                             }
-                            
                             FieldsLeft--;
-                            CheckForMines(index);
+                            if (btn.Mine == false)
+                            {
+                                CheckForMines(btn.H, btn.W);
+                            }                            
                         }
                     }
-                    Fields[index].MouseDown += new MouseEventHandler(Field_RightClick);
+                    Fields[h][w].MouseDown += new MouseEventHandler(Field_RightClick);
                     void Field_RightClick(object sender, MouseEventArgs e)
                     {
                         if (e.Button == MouseButtons.Right)
                         {
-                            Button btn = (Button)sender;
+                            CustomButton btn = (CustomButton)sender;
 
-                            if (btn.BackColor != Color.Red)
+                            if (btn.Flag == false && FlagsCount > 0)
                             {
                                 btn.BackColor = Color.Red;
+                                btn.Flag = true;
+                                FlagsCount--;
+                                LBLFlags.Text = FlagsCount.ToString();
                             }
-                            else
+                            else if (btn.Flag == true)
                             {
                                 btn.BackColor = Color.Gray;
+                                btn.Flag = false;
+                                FlagsCount++;
+                                LBLFlags.Text = FlagsCount.ToString();
                             }
                         }
                     }
@@ -112,314 +156,194 @@ namespace Minesweeper
         {
             for (int i = 0; i < MineCount; i++)
             {
-                int a = rnd.Next(0, width * height);
-                if ((string)Fields[a].Tag != "Mine")
+                int h = rnd.Next(0, GridHeight);
+                int w = rnd.Next(0, GridWidth);
+                if (Fields[h][w].Mine == false && (string)Fields[h][w].Tag != "First")   
                 {
                     PictureBox Mine = new PictureBox();
-                    Mine.Location = Fields[a].Location;
+                    Mine.Location = Fields[h][w].Location;
                     Mine.Size = new Size(FieldSize, FieldSize);
                     Mine.Image = Minesweeper.Properties.Resources.Mine;
                     Mine.SizeMode = PictureBoxSizeMode.StretchImage;
                     this.Controls.Add(Mine);
-                    Fields[a].Tag = "Mine";
+                    Fields[h][w].Mine = true;
                 }
                 else
                 {
                     i--;
                 }
             }
-        }
+        } 
 
-        private void CheckForMines(int index)
+        private void CheckForMines(int h, int w)
         {
-            #region Checks
-            WhereTocheck(index);
-            if (MineCheck == 0)
-            {
-                ClickIfEmpty(index);
-            }
-            #endregion
+            CheckElement(h - 1, w);
+            CheckElement(h - 1, w + 1);
+            CheckElement(h, w + 1);
+            CheckElement(h + 1, w + 1);
+            CheckElement(h + 1, w);
+            CheckElement(h + 1, w - 1);
+            CheckElement(h, w - 1);
+            CheckElement(h - 1, w - 1);
             Label MinesAround = new Label();
-            MinesAround.Location = Fields[index].Location;
+            MinesAround.Location = Fields[h][w].Location;
             MinesAround.Size = new Size(FieldSize, FieldSize);
-            if (MineCheck != 0)
-            {
-                MinesAround.Text = MineCheck.ToString();
-            }
             MinesAround.Font = new Font("Microsoft Sans Serif", 10);
             MinesAround.TextAlign = ContentAlignment.MiddleCenter;
             MinesAround.BorderStyle = BorderStyle.FixedSingle;
             this.Controls.Add(MinesAround);
+            if (MineCheck != 0)
+            {
+                MinesAround.Text = MineCheck.ToString();
+            }
+            if (MineCheck == 0)
+            {
+                ClickEmpty(h, w);
+            }
             MineCheck = 0;
             MinesAround.MouseDown += new MouseEventHandler(Field_MiddleMouse);
             void Field_MiddleMouse(object sender, MouseEventArgs e)
             {
                 if (e.Button == MouseButtons.Middle)
                 {
-                    ClickIfEmpty(index);
+                    ClickEmpty(h, w);
                 }
             }
-            if (FieldsLeft == MinesLeft)
-            {            
-                foreach (Button Field in Fields)
+            if (FieldsLeft == MineCount)
+            {
+                EndGame = true;
+                foreach (CustomButton[] Row in Fields)
                 {
-                    Field.BackColor = Color.Red;
-                    Field.Enabled = false;
+                    foreach (CustomButton Field in Row)
+                    {
+                        if (Field!=null)
+                        {
+                            Field.BackColor = Color.Red;
+                            Field.Enabled = false;         
+                        }                        
+                    }
                 }
-                MessageBox.Show("You win!");
+                LBLFlags.Text = "0";
+                Score = Time + Lives + (Lives - LivesLeft);                
+                MessageBox.Show("You win!\n Score:"+Score);                
             }
         }
-        #region Methods for checks
-        void CheckUp(int index)
+
+        private void CheckElement(int h, int w)
         {
-            if ((string)Fields[index - width].Tag == "Mine")
+            try
             {
-                MineCheck++;
+                if (Fields[h][w].Mine == true)
+                {
+                    MineCheck++;
+                }
             }
-        }
-
-        void CheckUperRight(int index)
-        {
-            if ((string)Fields[index - (width - 1)].Tag == "Mine")
+            catch (Exception)
             {
-                MineCheck++;
+
             }
         }
 
-        void CheckRight(int index)
+        private void ClickAround(int h, int w)
         {
-            if ((string)Fields[index + 1].Tag == "Mine")
+            try
             {
-                MineCheck++;
+                Fields[h][w].PerformClick();
             }
-        }
-
-        void CheckLowerRight(int index)
-        {
-            if ((string)Fields[index + (width + 1)].Tag == "Mine")
+            catch (Exception)
             {
-                MineCheck++;
+
             }
         }
 
-        void CheckLower(int index)
+        private void ClickEmpty(int h, int w)
         {
-            if ((string)Fields[index + width].Tag == "Mine")
+            ClickAround(h - 1, w);
+            ClickAround(h - 1, w + 1);
+            ClickAround(h, w + 1);
+            ClickAround(h + 1, w + 1);
+            ClickAround(h + 1, w);
+            ClickAround(h + 1, w - 1);
+            ClickAround(h, w - 1);
+            ClickAround(h - 1, w - 1);
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (EndGame==false)
             {
-                MineCheck++;
-            }
+                Time++;
+                LBLTime.Text = Time.ToString();
+            }           
         }
 
-        void CheckLowerLeft(int index)
+        private void BTNReset_Click(object sender, EventArgs e)
         {
-            if ((string)Fields[index + (width - 1)].Tag == "Mine")
+            for (int i = 0; i < Fields.Length; i++)
             {
-                MineCheck++;
+                Array.Clear(Fields[i], 0, Fields[i].Length);
             }
-        }
-
-        void CheckLeft(int index)
-        {
-            if ((string)Fields[index - 1].Tag == "Mine")
-            {
-                MineCheck++;
-            }
-        }
-
-        void CheckUperLeft(int index)
-        {
-            if ((string)Fields[index - (width + 1)].Tag == "Mine")
-            {
-                MineCheck++;
-            }
-        }
-        #endregion
-
-        private void easyToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            width = 9;
-            height = 9;
-            MineCount = 10;
-        }
-
-        private void mediumToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            height = 16;
-            width = 16;
-            MineCount = 40;
-        }
-
-        private void hardToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            width = 30;
-            height = 16;
-            MineCount = 99;
-        }
-
-        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            FieldsLeft = height * width;
-            Fields.Clear();
             this.Controls.Clear();
             this.InitializeComponent();
+            FieldsLeft = GridHeight * GridWidth;
+            EndGame = false;
             CreateFields();
             SetMines();
             LivesLeft = Lives;
-            MinesLeft = MineCount;
+            FlagsCount = MineCount;
             LBLLives.Text = LivesLeft.ToString();
+            LBLFlags.Text = FlagsCount.ToString();
+            Time = 0;
+            Score = 0;
         }
 
-        private void ClickIfEmpty(int index)
+        private void BTNGame_Click(object sender, EventArgs e)
         {
-            if (index < width)
+            Difficulty diff = new Difficulty();
+            diff.Show();
+        }
+
+        bool Mousedown;
+        Point LastLocation;
+
+        private void BTNMinesweeper_MouseDown(object sender, MouseEventArgs e)
+        {
+            Mousedown = true;
+            LastLocation = e.Location;
+        }
+
+        private void BTNMinesweeper_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (Mousedown)
             {
-                if (index == 0)
-                {
-                    Fields[index + 1].PerformClick();
-                    Fields[index + width].PerformClick();
-                    Fields[index + (width + 1)].PerformClick();
-                }
-                else if (index == width - 1)
-                {
-                    Fields[index - 1].PerformClick();
-                    Fields[index + (width - 1)].PerformClick();
-                    Fields[index + width].PerformClick();
-                }
-                else
-                {
-                    Fields[index + width].PerformClick();
-                    Fields[index + (width + 1)].PerformClick();
-                    Fields[index + (width - 1)].PerformClick();
-                    Fields[index + 1].PerformClick();
-                    Fields[index - 1].PerformClick();
-                }
-            }
-            else if (index >= width * (height - 1) && index < width * height)
-            {
-                if (index == width * (height - 1))
-                {
-                    Fields[index - width].PerformClick();
-                    Fields[index - (width - 1)].PerformClick();
-                    Fields[index + 1].PerformClick();
-                }
-                else if (index == (width * height) - 1)
-                {
-                    Fields[index - (width + 1)].PerformClick();
-                    Fields[index - width].PerformClick();
-                    Fields[index - 1].PerformClick();
-                }
-                else
-                {
-                    Fields[index - width].PerformClick();
-                    Fields[index - (width + 1)].PerformClick();
-                    Fields[index - (width - 1)].PerformClick();
-                    Fields[index - 1].PerformClick();
-                    Fields[index + 1].PerformClick();
-                }
-            }
-            else if ((index - (width - 1)) % width == 0)
-            {
-                Fields[index - width].PerformClick();
-                Fields[index - (width + 1)].PerformClick();
-                Fields[index - 1].PerformClick();
-                Fields[index + (width - 1)].PerformClick();
-                Fields[index + width].PerformClick();
-            }
-            else if (index % width == 0)
-            {
-                Fields[index - width].PerformClick();
-                Fields[index - (width - 1)].PerformClick();
-                Fields[index + 1].PerformClick();
-                Fields[index + (width + 1)].PerformClick();
-                Fields[index + width].PerformClick();
-            }
-            else
-            {
-                Fields[index - width].PerformClick();
-                Fields[index - (width - 1)].PerformClick();
-                Fields[index + 1].PerformClick();
-                Fields[index + (width + 1)].PerformClick();
-                Fields[index + width].PerformClick();
-                Fields[index + (width - 1)].PerformClick();
-                Fields[index - 1].PerformClick();
-                Fields[index - (width + 1)].PerformClick();
+                this.Location = new Point(
+                    (this.Location.X - LastLocation.X) + e.X, (this.Location.Y - LastLocation.Y) + e.Y);
+
+                this.Update();
             }
         }
-        private void WhereTocheck(int index)
+
+        private void BTNMinesweeper_MouseUp(object sender, MouseEventArgs e)
         {
-            if (index < width)
-            {
-                if (index == 0)
-                {
-                    CheckRight(index);
-                    CheckLower(index);
-                    CheckLowerRight(index);
-                }
-                else if (index == width - 1)
-                {
-                    CheckLeft(index);
-                    CheckLowerLeft(index);
-                    CheckLower(index);
-                }
-                else
-                {
-                    CheckLeft(index);
-                    CheckRight(index);
-                    CheckLowerLeft(index);
-                    CheckLower(index);
-                    CheckLowerRight(index);
-                }
-            }
-            else if (index >= width * (height - 1) && index < width * height)
-            {
-                if (index == width * (height - 1))
-                {
-                    CheckUp(index);
-                    CheckUperRight(index);
-                    CheckRight(index);
-                }
-                else if (index == (width * height) - 1)
-                {
-                    CheckUperLeft(index);
-                    CheckUp(index);
-                    CheckLeft(index);
-                }
-                else
-                {
-                    CheckUperLeft(index);
-                    CheckUp(index);
-                    CheckUperRight(index);
-                    CheckLeft(index);
-                    CheckRight(index);
-                }
-            }
-            else if ((index - (width - 1)) % width == 0)
-            {
-                CheckUp(index);
-                CheckUperLeft(index);
-                CheckLeft(index);
-                CheckLowerLeft(index);
-                CheckLower(index);
-            }
-            else if (index % width == 0)
-            {
-                CheckUp(index);
-                CheckUperRight(index);
-                CheckRight(index);
-                CheckLowerRight(index);
-                CheckLower(index);
-            }
-            else
-            {
-                CheckUp(index);
-                CheckUperRight(index);
-                CheckRight(index);
-                CheckLowerRight(index);
-                CheckLower(index);
-                CheckLowerLeft(index);
-                CheckLeft(index);
-                CheckUperLeft(index);
-            }
+            Mousedown = false;
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void BTNMinimize_Click(object sender, EventArgs e)
+        {
+                this.WindowState = FormWindowState.Minimized;          
+        }
+    }
+
+    class CustomButton : Button
+    {
+        public int H;
+        public int W;
+        public bool Mine;
+        public bool Flag;
     }
 }
