@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.LBLLives = new System.Windows.Forms.Label();
             this.LBLFlags = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
@@ -38,6 +39,8 @@
             this.BTNMinesweeper = new System.Windows.Forms.Button();
             this.BTNClose = new System.Windows.Forms.Button();
             this.BTNMinimize = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // LBLLives
@@ -141,6 +144,16 @@
             this.BTNMinimize.UseVisualStyleBackColor = false;
             this.BTNMinimize.Click += new System.EventHandler(this.BTNMinimize_Click);
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::Minesweeper.Properties.Resources.Mine;
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(23, 23);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 10;
+            this.pictureBox1.TabStop = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -148,6 +161,7 @@
             this.AutoSize = true;
             this.BackColor = System.Drawing.Color.LightGray;
             this.ClientSize = new System.Drawing.Size(198, 138);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.BTNMinimize);
             this.Controls.Add(this.BTNClose);
             this.Controls.Add(this.BTNMinesweeper);
@@ -158,8 +172,10 @@
             this.Controls.Add(this.LBLLives);
             this.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Form1";
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -175,6 +191,7 @@
         private System.Windows.Forms.Button BTNMinesweeper;
         private System.Windows.Forms.Button BTNClose;
         private System.Windows.Forms.Button BTNMinimize;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
 
