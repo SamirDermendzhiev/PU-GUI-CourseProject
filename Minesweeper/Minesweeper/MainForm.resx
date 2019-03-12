@@ -121,6 +121,26 @@
     <value>132, 17</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="BTNMinesweeper.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAL
+        EwAACxMBAJqcGAAAAPlJREFUOE/N0r1qAkEYheG1MEasAlooEYJYWKXzArwBG4sEC5uQTolgyGV4BTb2
+        VmktbP0BTQwYEFLE0jogJGB8D+7AsjPa6oEHdn6+GXZmvLPNI97wh1/M0EIUR5NFBXHcY4o5qrhCGddw
+        RkUL/KOHBJQIYuhCYx9+28oLNMGowUQ7B8easPIOM6GjDpJEZv/ptWHGJ+oIRwemwU/od26wxDcK0AHq
+        TDRnAytmgRJyWPltWeMWRWzhXEDXNkAKXzDFwUXyeMUYVp7xgD7CxYZuQFdah5VL3MFVGKRHdgFn0tAu
+        rkLRi9Sco9EjecIIP74hGji486nieTv8wVKOcVhdTQAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="BTNGame.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAL
+        EwAACxMBAJqcGAAAAPlJREFUOE/N0r1qAkEYheG1MEasAlooEYJYWKXzArwBG4sEC5uQTolgyGV4BTb2
+        VmktbP0BTQwYEFLE0jogJGB8D+7AsjPa6oEHdn6+GXZmvLPNI97wh1/M0EIUR5NFBXHcY4o5qrhCGddw
+        RkUL/KOHBJQIYuhCYx9+28oLNMGowUQ7B8easPIOM6GjDpJEZv/ptWHGJ+oIRwemwU/od26wxDcK0AHq
+        TDRnAytmgRJyWPltWeMWRWzhXEDXNkAKXzDFwUXyeMUYVp7xgD7CxYZuQFdah5VL3MFVGKRHdgFn0tAu
+        rkLRi9Sco9EjecIIP74hGji486nieTv8wVKOcVhdTQAAAABJRU5ErkJggg==
+</value>
+  </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAUAEBAAAAEAIABoBAAAVgAAABgYAAABACAAiAkAAL4EAAAgIAAAAQAgAKgQAABGDgAAMDAAAAEA

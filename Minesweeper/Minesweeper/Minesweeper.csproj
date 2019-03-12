@@ -68,23 +68,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Resources\njnaruto.ttf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -94,6 +95,33 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\MineCrossed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\iconfinder_update_678134.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cyan.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\flag.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\306364_preview1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cyanfield.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\National Anthem of USSR.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sssr.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sssr3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sssr4.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

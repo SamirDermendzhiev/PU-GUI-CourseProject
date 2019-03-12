@@ -22,7 +22,9 @@ namespace Minesweeper
         bool EndGame = false;
         //Form visibility
         public static int FieldSize = 23;
-        int FreeSpace = 65;    
+        int FreeSpace = 65;
+        public static bool OurBool = false;
+        public static bool Play = false;
         //Displaying number of mines around        
         int MineCheck = 0;
         //Curent game session items
@@ -31,6 +33,7 @@ namespace Minesweeper
         int LivesLeft = Lives;
         int Time = 0;        
         int Score = 0;
+        bool FirstClick = true;
         //Mines
         Random rnd = new Random();
         //Fields
@@ -43,9 +46,8 @@ namespace Minesweeper
             timer1.Interval = 1000; // 1 second
             timer1.Start();
             CreateFields();
-            SetMines();
-            LBLLives.Text = LivesLeft.ToString();
-            LBLFlags.Text = FlagsCount.ToString();
+            LBLLives.Text = "Lives: " + LivesLeft.ToString();
+            LBLFlags.Text = "Flags: " + FlagsCount.ToString();
         }
 
         private void CreateFields()
@@ -62,37 +64,108 @@ namespace Minesweeper
                     Fields[h][w] = new CustomButton();
                     Fields[h][w].Location = new Point(2/*Two pixels from the left*/ + w * FieldSize, FreeSpace/*Space at the top*/ + h * FieldSize);
                     Fields[h][w].Size = new Size(FieldSize, FieldSize);
-                    Fields[h][w].BackColor = Color.Gray;
+                    Fields[h][w].BackColor = Color.Red;
                     Fields[h][w].FlatStyle = FlatStyle.Flat;
                     Fields[h][w].FlatAppearance.BorderSize = 1;
-                    Fields[h][w].FlatAppearance.BorderColor = Color.Black;
+                    Fields[h][w].FlatAppearance.BorderColor = Color.Azure;
+                    if (OurBool == false)
+                    {
+                        Fields[h][w].BackgroundImage = Minesweeper.Properties.Resources.cyanfield;
+                    }
+                    else
+                    {
+                        this.BackColor = Color.Gold;
+                        Fields[h][w].FlatAppearance.BorderColor = Color.Gold;
+                        PCBox1.Image = Properties.Resources.sssr3;
+                        BTNMinesweeper.Text = "OURSWEEPER";
+                        BTNMinesweeper.BackColor = Color.Red;
+                        BTNMinimize.ForeColor = Color.Yellow;
+                        BTNMinimize.BackColor = Color.Red;
+                        BTNClose.ForeColor = Color.Yellow;
+                        BTNClose.BackColor = Color.Red;
+                        BTNMinesweeper.FlatAppearance.MouseDownBackColor = Color.Red;
+                        BTNMinesweeper.FlatAppearance.MouseOverBackColor = Color.Red;
+                    }
                     Fields[h][w].H = h;
                     Fields[h][w].W = w;
                     this.Controls.Add(Fields[h][w]);
                     Fields[h][w].Click += new EventHandler(Field_Click);
                     void Field_Click(object sender, EventArgs e)
                     {
-                        CustomButton btn = (CustomButton)sender;                        
+                        CustomButton btn = (CustomButton)sender;
+                        //First click always reveals
+                        if (FirstClick == true)
+                        {
+                            int curentW = btn.W;
+                            int curentH = btn.H;
+                            int clear = 0;
+                            btn.First = true;
+                            //How many empty buttons to have
+                            if (FieldsLeft - MineCount > 14)
+                            {
+                                clear = 3;
+                            }
+                            else if (FieldsLeft - MineCount > 11)
+                            {
+                                clear = 2;
+                            }
+                            else if (FieldsLeft - MineCount > 8)
+                            {
+                                clear = 1;
+                            }
+
+                            int dirrection = 0;
+                            for (int i = 0; i < clear; i++)
+                            {
+                                First_Click(curentH - 1, curentW);
+                                First_Click(curentH - 1, curentW + 1);
+                                First_Click(curentH, curentW + 1);
+                                First_Click(curentH + 1, curentW + 1);
+                                First_Click(curentH + 1, curentW);
+                                First_Click(curentH + 1, curentW - 1);
+                                First_Click(curentH, curentW - 1);
+                                First_Click(curentH - 1, curentW - 1);
+                                dirrection = rnd.Next(0, 4);
+                                if (dirrection == 0)
+                                {
+                                    curentH--;
+                                }
+                                if (dirrection == 1)
+                                {
+                                    curentW--;
+                                }
+                                if (dirrection == 2)
+                                {
+                                    curentH++;
+                                }
+                                if (dirrection == 3)
+                                {
+                                    curentW++;
+                                }
+                            }
+                            SetMines();
+                            FirstClick = false;
+                        }
                         //Can't click flagged fields
                         if (btn.Flag == false)
                         {
                             btn.Visible = false;
-                            if (btn.Mine == true)
+                            if (btn.Mine == true)//Lives system
                             {
                                 MessageBox.Show("You don't want to do that...(Lives: " + (LivesLeft - 1) + ")");
                                 LivesLeft--;
                                 FieldsLeft++;
-                                LBLLives.Text = LivesLeft.ToString();
+                                LBLLives.Text = "Lives: " + LivesLeft.ToString();
                                 btn.Visible = true;
                                 btn.Flag = true;
-                                btn.BackColor = Color.Red;
+                                btn.Image = Minesweeper.Properties.Resources.flag;
                                 FlagsCount--;
-                                LBLFlags.Text = FlagsCount.ToString();                               
+                                LBLFlags.Text = "Flags: " + FlagsCount.ToString();                               
                                 if (LivesLeft == 0)
                                 {
-                                    EndGame = true;
+                                    EndGame = true;//Stop timer
                                     MessageBox.Show("You lose!");
-                                    foreach (CustomButton[] Row in Fields)
+                                    foreach (CustomButton[] Row in Fields)//Reveal mines
                                     {
                                         foreach (CustomButton Field in Row)
                                         {
@@ -106,7 +179,7 @@ namespace Minesweeper
                                                 if (Field.Mine == false && Field.Flag == true)
                                                 {
                                                     Field.Visible = false;
-                                                    PictureBox NotMine = new PictureBox();
+                                                    PictureBox NotMine = new PictureBox();//Flagge non-Mine fields are shown
                                                     NotMine.Location = Field.Location;
                                                     NotMine.Size = new Size(FieldSize, FieldSize);
                                                     NotMine.Image = Minesweeper.Properties.Resources.MineCrossed;
@@ -121,12 +194,12 @@ namespace Minesweeper
                             FieldsLeft--;
                             if (btn.Mine == false)
                             {
-                                CheckForMines(btn.H, btn.W);
+                                CheckForMines(btn.H, btn.W);//Looks around field for mines and show number
                             }                            
                         }
                     }
                     Fields[h][w].MouseDown += new MouseEventHandler(Field_RightClick);
-                    void Field_RightClick(object sender, MouseEventArgs e)
+                    void Field_RightClick(object sender, MouseEventArgs e)//Seting flags
                     {
                         if (e.Button == MouseButtons.Right)
                         {
@@ -134,17 +207,17 @@ namespace Minesweeper
 
                             if (btn.Flag == false && FlagsCount > 0)
                             {
-                                btn.BackColor = Color.Red;
+                                btn.Image = Minesweeper.Properties.Resources.flag;                              
                                 btn.Flag = true;
                                 FlagsCount--;
-                                LBLFlags.Text = FlagsCount.ToString();
+                                LBLFlags.Text = "Flags: " + FlagsCount.ToString();
                             }
                             else if (btn.Flag == true)
                             {
-                                btn.BackColor = Color.Gray;
+                                btn.Image = null;
                                 btn.Flag = false;
                                 FlagsCount++;
-                                LBLFlags.Text = FlagsCount.ToString();
+                                LBLFlags.Text = "Flags: " + FlagsCount.ToString();
                             }
                         }
                     }
@@ -158,7 +231,7 @@ namespace Minesweeper
             {
                 int h = rnd.Next(0, GridHeight);
                 int w = rnd.Next(0, GridWidth);
-                if (Fields[h][w].Mine == false && (string)Fields[h][w].Tag != "First")   
+                if (Fields[h][w].Mine == false && Fields[h][w].First == false)   
                 {
                     PictureBox Mine = new PictureBox();
                     Mine.Location = Fields[h][w].Location;
@@ -188,21 +261,54 @@ namespace Minesweeper
             Label MinesAround = new Label();
             MinesAround.Location = Fields[h][w].Location;
             MinesAround.Size = new Size(FieldSize, FieldSize);
-            MinesAround.Font = new Font("Microsoft Sans Serif", 10);
+            MinesAround.Font = new Font("Ninja Naruto", 10);
             MinesAround.TextAlign = ContentAlignment.MiddleCenter;
-            MinesAround.BorderStyle = BorderStyle.FixedSingle;
+            MinesAround.BorderStyle = BorderStyle.FixedSingle;    
             this.Controls.Add(MinesAround);
+           
             if (MineCheck != 0)
             {
+                if (MineCheck == 1)
+                {
+                    MinesAround.ForeColor = Color.Crimson;                   
+                }
+                if (MineCheck == 2)
+                {
+                    MinesAround.ForeColor = Color.DeepPink;
+                }
+                if (MineCheck == 3)
+                {
+                    MinesAround.ForeColor = Color.Purple;
+                }
+                if (MineCheck == 4)
+                {
+                    MinesAround.ForeColor = Color.DarkGreen;
+                }
+                if (MineCheck == 5)
+                {
+                    MinesAround.ForeColor = Color.DarkBlue;
+                }
+                if (MineCheck == 6)
+                {
+                    MinesAround.ForeColor = Color.IndianRed;
+                }
+                if (MineCheck == 7)
+                {
+                    MinesAround.ForeColor = Color.DarkOliveGreen;
+                }
+                if (MineCheck == 8)
+                {
+                    MinesAround.ForeColor = Color.DeepPink;
+                }
                 MinesAround.Text = MineCheck.ToString();
             }
-            if (MineCheck == 0)
+            if (MineCheck == 0)//If there are no mine around click fields around the button
             {
                 ClickEmpty(h, w);
             }
             MineCheck = 0;
             MinesAround.MouseDown += new MouseEventHandler(Field_MiddleMouse);
-            void Field_MiddleMouse(object sender, MouseEventArgs e)
+            void Field_MiddleMouse(object sender, MouseEventArgs e)//Middle click reveals
             {
                 if (e.Button == MouseButtons.Middle)
                 {
@@ -211,14 +317,14 @@ namespace Minesweeper
             }
             if (FieldsLeft == MineCount)
             {
-                EndGame = true;
-                foreach (CustomButton[] Row in Fields)
+                EndGame = true;//Stop timer
+                foreach (CustomButton[] Row in Fields)//Flag Mines
                 {
                     foreach (CustomButton Field in Row)
                     {
                         if (Field!=null)
                         {
-                            Field.BackColor = Color.Red;
+                            Field.Image = Properties.Resources.flag;
                             Field.Enabled = false;         
                         }                        
                     }
@@ -237,6 +343,18 @@ namespace Minesweeper
                 {
                     MineCheck++;
                 }
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private void First_Click(int h, int w)
+        {
+            try
+            {
+                Fields[h][w].First = true;
             }
             catch (Exception)
             {
@@ -270,11 +388,16 @@ namespace Minesweeper
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (EndGame==false)
+            if (EndGame == false)
             {
                 Time++;
-                LBLTime.Text = Time.ToString();
-            }           
+                LBLTime.Text ="Time: " + Time.ToString();
+            }
+            if (Play == true)
+            {
+                BTNReset.PerformClick();
+                Play = false;
+            }
         }
 
         private void BTNReset_Click(object sender, EventArgs e)
@@ -288,19 +411,20 @@ namespace Minesweeper
             FieldsLeft = GridHeight * GridWidth;
             EndGame = false;
             CreateFields();
-            SetMines();
             LivesLeft = Lives;
             FlagsCount = MineCount;
-            LBLLives.Text = LivesLeft.ToString();
-            LBLFlags.Text = FlagsCount.ToString();
+            LBLLives.Text ="Lives: " + LivesLeft.ToString();
+            LBLFlags.Text = "Flags: " + FlagsCount.ToString();
+            BTNMinimize.Location = new Point(BTNClose.Location.X - 26, BTNClose.Location.Y);
             Time = 0;
             Score = 0;
+            FirstClick = true;
         }
 
         private void BTNGame_Click(object sender, EventArgs e)
         {
             Difficulty diff = new Difficulty();
-            diff.Show();
+            diff.ShowDialog();
         }
 
         bool Mousedown;
@@ -335,7 +459,7 @@ namespace Minesweeper
 
         private void BTNMinimize_Click(object sender, EventArgs e)
         {
-                this.WindowState = FormWindowState.Minimized;          
+            this.WindowState = FormWindowState.Minimized;          
         }
     }
 
@@ -345,5 +469,6 @@ namespace Minesweeper
         public int W;
         public bool Mine;
         public bool Flag;
+        public bool First = false;
     }
 }
